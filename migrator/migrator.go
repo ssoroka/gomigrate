@@ -162,7 +162,7 @@ func (m *Migrator) runFunctionHook(mig *Migration, f migrationStepFunc, directio
 		mig.Output("Running " + string(scope) + "-" + string(direction) + " migration")
 
 		if err := f(m); err != nil {
-			mig.Output("Failed to run pre-up migration: " + err.Error())
+			mig.Output(fmt.Sprintf("Failed to run %s-%s migration: %v", scope, direction, err))
 			return err
 		}
 	}

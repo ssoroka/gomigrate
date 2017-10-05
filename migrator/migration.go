@@ -26,28 +26,6 @@ func NewMigration(number int64) *Migration {
 	dayStr := numberStr[6:8]
 	secondsStr := numberStr[8:13]
 	m.FormattedNumber = yearStr + "_" + monthStr + "_" + dayStr + "_" + secondsStr
-	// year, err := strconv.ParseInt(yearStr, 10, 32)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// month, err := strconv.ParseInt(monthStr, 10, 32)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// day, err := strconv.ParseInt(dayStr, 10, 32)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// seconds, err := strconv.ParseInt(secondsStr, 10, 32)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// hours := seconds / time.Hour
-	// seconds = seconds % time.Hour
-	// minutes := seconds / time.Minute
-	// seconds = seconds % time.Minute
-
-	// m.Timestamp = time.Date(year, month, day, hours, minutes, seconds, 0, time.Local())
 	return m
 }
 
