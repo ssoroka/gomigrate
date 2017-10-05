@@ -1,0 +1,23 @@
+package migrations
+
+import "github.com/ssoroka/gomigrate/migrator"
+
+func {{ .FuncName }}() *migrator.Migration {
+  return migrator.NewMigration({{ .OrderingNumber }}).Up(func(m *migrator.Migrator) error { 
+    // Code for pre-deploy migration. If this returns an error, the deploy should be stopped.
+    return nil
+  }).Down(func(m *migrator.Migrator) error {
+    // undo code for pre-deploy migration
+    return nil
+  }).PostUp(func(m *migrator.Migrator) error { 
+    // code for post-deploy migration
+    return nil
+  }).PostDown(func(m *migrator.Migrator) error {
+    // undo code for post-deploy migration
+    return nil
+  }).Verify(func(m *migrator.Migrator) error {
+    // code to verify the migration did what you thought it should. 
+    // If you return an error, the migration will be rolled back (PostDown, then Down)
+    return nil
+  })
+}

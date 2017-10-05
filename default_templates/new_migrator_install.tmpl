@@ -1,0 +1,16 @@
+package main
+
+import "github.com/ssoroka/gomigrate/migrator"
+
+func main() {
+	// Initialize your app and connect to the database here
+
+	mig := migrator.NewMigrator()
+	mig.PreMigration(func() { /* start transaction */ })
+	mig.PostMigration(func() { /* commit transaction */ })
+	mig.PostFailure(func() { /* rollback transaction */ })
+
+	// migrations can be added here using "migrate new"
+
+	mig.Run()
+}
