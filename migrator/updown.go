@@ -17,9 +17,39 @@ func DownMigration(options *UpDownOptions) {
 
 func runMigration(direction string, options *UpDownOptions) {
 	config = LoadConfig()
+	if !migrationBinaryExists() {
+		buildMigrationBinary()
+	}
+	runMigrationBinary(direction)
 
-	originMigratorGo := path.Join(config.LocalMigratorPath, config.MainMigrationFile)
+	fmt.Println("Done migrating")
+}
 
+func migrationBinaryExists() bool {
+	return FileExists(migratorBinFile())
+}
+
+func buildMigrationBinary() {
+	// go build -o binary source driver
+	goArgs := []string{"build", "-o", migratorBinFile(), originMigratorGoFile()}
+
+	driverFile := path.Join(config.LocalMigratorPath, "driver.go")
+	if FileExists(driverFile) {
+		goArgs = append(goArgs, driverFile)
+	}
+
+	fmt.Println("go", goArgs)
+	buildCmd := exec.Command("go", goArgs...)
+	buildCmd.Stdout = os.Stdout
+	buildCmd.Stderr = os.Stderr
+	err := buildCmd.Run()
+	if err != nil {
+		panic("Couldn't build migration binary: " + err.Error())
+	}
+}
+
+func runMigrationBinary(direction string) {
+	// migratorBinary -config etc
 	migratorArgs := []string{"-" + direction}
 	if options.PostDeployOnly != nil && *options.PostDeployOnly {
 		migratorArgs = append(migratorArgs, "-post")
@@ -39,21 +69,24 @@ func runMigration(direction string, options *UpDownOptions) {
 		}
 	}
 
-	goArgs := []string{"run", originMigratorGo}
+	bin := migratorBinFile()
+	fmt.Println(bin, migratorArgs)
 
-	driverFile := path.Join(config.LocalMigratorPath, "driver.go")
-	if FileExists(driverFile) {
-		goArgs = append(goArgs, driverFile)
-	}
-
-	goArgs = append(goArgs, migratorArgs...)
-	fmt.Println("go", goArgs)
-	cmd := exec.Command("go", goArgs...)
+	cmd := exec.Command(bin, migratorArgs...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err := cmd.Run()
 	if err != nil {
 		panic("Couldn't run migrations: " + err.Error())
 	}
-	fmt.Println("Done migrating")
+
+}
+
+func originMigratorGoFile() string {
+	return path.Join(config.LocalMigratorPath, config.MainMigrationFile)
+}
+
+func migratorBinFile() string {
+	s := originMigratorGoFile()
+	return s[0 : len(s)-3]
 }

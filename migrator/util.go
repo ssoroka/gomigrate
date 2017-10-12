@@ -6,9 +6,8 @@ import (
 
 func FileExists(filename string) bool {
 	f, err := os.Open(filename)
-	if err == nil {
+	if f != nil {
 		f.Close()
-		return true
 	}
-	return false
+	return !os.IsNotExist(err)
 }

@@ -22,6 +22,7 @@ var (
 			Name: newMigrationFlagSet.String("name", "", "A name for the migration. (Required)"),
 			Help: newMigrationFlagSet.Bool("help", false, "Help"),
 		},
+		Build: migrator.BuildOptions{},
 		Up: migrator.UpDownOptions{
 			PreDeployOnly:  upMigrationFlagSet.Bool("pre", false, "Run Pre-deploy scripts only (default is all)"),
 			PostDeployOnly: upMigrationFlagSet.Bool("post", false, "Run Post-deploy scripts only (default is all)"),
@@ -44,6 +45,8 @@ var (
 		migrate install [-help]                Run once on a new project to install the default migration files
 		migrate new [-help]                    Creates a new migration script in your project
 		migrate up [-help]                     Runs all pending migrations
+		migrate down [-help]                   Runs a migration down, used typically for a specific migration version
+		migrate build                          Build the migrator binary used to run migrations in production without local dependencies on the go language
 `
 )
 
@@ -65,6 +68,8 @@ func main() {
 			os.Exit(2)
 		}
 		install(&options.Install)
+	case "build":
+		migrator.BuildMigrator()
 	case "new":
 		if err := newMigrationFlagSet.Parse(os.Args[2:]); err != nil {
 			panic(err)
@@ -93,7 +98,7 @@ func main() {
 		}
 		migrator.DownMigration(&options.Down)
 	default:
-		flag.Usage()
+		fmt.Println(usageText)
 		os.Exit(2)
 	}
 

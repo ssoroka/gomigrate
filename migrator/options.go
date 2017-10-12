@@ -19,7 +19,11 @@ type NewOptions struct {
 
 type Options struct {
 	Install InstallOptions
+	Build   BuildOptions
 	New     NewOptions
 	Up      UpDownOptions
 	Down    UpDownOptions
+}
+
+type BuildOptions struct {
 }
