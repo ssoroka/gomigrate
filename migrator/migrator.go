@@ -159,7 +159,7 @@ func (m *Migrator) setRunStates() {
 
 func (m *Migrator) runFunctionHook(mig *Migration, f migrationStepFunc, direction direction, scope scope, version int64) error {
 	if f != nil {
-		mig.Output("Running " + string(scope) + "-" + string(direction) + " migration")
+		mig.Output("Running " + string(scope) + "-" + string(direction) + " migration (" + mig.Name + ")")
 
 		if err := f(m); err != nil {
 			mig.Output(fmt.Sprintf("Failed to run %s-%s migration: %v", scope, direction, err))
@@ -178,6 +178,28 @@ func (m *Migrator) runFunctionHook(mig *Migration, f migrationStepFunc, directio
 		}
 	}
 	return nil
+}
+
+func (m *Migrator) TestMigrationStep(mig *Migration, scopeStr string, directionStr string) error {
+	switch scope(scopeStr) {
+	case scopePreMigration:
+		switch direction(directionStr) {
+		case directionUp:
+			return mig.upFunc(m)
+		case directionDown:
+			return mig.downFunc(m)
+		}
+	case scopePostMigration:
+		switch direction(directionStr) {
+		case directionUp:
+			return mig.postUpFunc(m)
+		case directionDown:
+			return mig.postDownFunc(m)
+		}
+	default:
+		panic("bad scope: " + scopeStr)
+	}
+	panic("bad direction: " + directionStr)
 }
 
 type SortableMigrations []*Migration

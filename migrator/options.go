@@ -9,6 +9,7 @@ type UpDownOptions struct {
 	PostDeployOnly *bool
 	Version        *string
 	Force          *bool
+	Production     *bool
 	Help           *bool
 }
 

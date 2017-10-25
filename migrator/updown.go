@@ -17,7 +17,7 @@ func DownMigration(options *UpDownOptions) {
 
 func runMigration(direction string, options *UpDownOptions) {
 	config = LoadConfig()
-	if !migrationBinaryExists() {
+	if !migrationBinaryExists() || !*options.Production {
 		buildMigrationBinary()
 	}
 	runMigrationBinary(direction)
@@ -51,22 +51,17 @@ func buildMigrationBinary() {
 func runMigrationBinary(direction string) {
 	// migratorBinary -config etc
 	migratorArgs := []string{"-" + direction}
-	if options.PostDeployOnly != nil && *options.PostDeployOnly {
-		migratorArgs = append(migratorArgs, "-post")
-	} else if options.PreDeployOnly != nil && *options.PreDeployOnly {
-		migratorArgs = append(migratorArgs, "-pre")
-	}
-	if options.Force != nil && *options.Force {
-		migratorArgs = append(migratorArgs, "-force")
-	}
-	if options.Version != nil && *options.Version != "" {
-		migratorArgs = append(migratorArgs, "-version=\""+*options.Version+"\"")
-	}
 
+	// pass args on to the migration binary, with a few exceptions.
 	for i := range os.Args {
-		if os.Args[i] == "--" {
-			migratorArgs = append(migratorArgs, os.Args[i+1:len(os.Args)]...)
+		if i == 0 {
+			continue
 		}
+		switch os.Args[i] {
+		case "up", "down", "--":
+			continue
+		}
+		migratorArgs = append(migratorArgs, os.Args[i])
 	}
 
 	bin := migratorBinFile()

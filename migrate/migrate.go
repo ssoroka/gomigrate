@@ -28,6 +28,7 @@ var (
 			PostDeployOnly: upMigrationFlagSet.Bool("post", false, "Run Post-deploy scripts only (default is all)"),
 			Version:        upMigrationFlagSet.String("version", "", "Run up only on this version"),
 			Force:          upMigrationFlagSet.Bool("force", false, "Force the migration to run, even if it has already run successfully"),
+			Production:     upMigrationFlagSet.Bool("production", false, "set this to true for production so that any supplied migrator binary is not rebuilt"),
 			Help:           upMigrationFlagSet.Bool("help", false, "Help"),
 		},
 		Down: migrator.UpDownOptions{
@@ -35,6 +36,7 @@ var (
 			PostDeployOnly: downMigrationFlagSet.Bool("post", false, "Run Post-deploy scripts only (default is all)"),
 			Version:        downMigrationFlagSet.String("version", "", "Run down only on this version"),
 			Force:          downMigrationFlagSet.Bool("force", false, "Force the migration to run, even if it has not run, or already run down successfully"),
+			Production:     downMigrationFlagSet.Bool("production", false, "set this to true for production so that any supplied migrator binary is not rebuilt"),
 			Help:           downMigrationFlagSet.Bool("help", false, "Help"),
 		},
 	}

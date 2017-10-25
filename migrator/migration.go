@@ -3,6 +3,7 @@ package migrator
 import "fmt"
 
 type Migration struct {
+	Name            string
 	OrderingNumber  int64
 	FormattedNumber string
 	preHasRun       bool
@@ -16,9 +17,10 @@ type Migration struct {
 
 type migrationStepFunc func(migrator *Migrator) error
 
-func NewMigration(number int64) *Migration {
+func NewMigration(number int64, name string) *Migration {
 	m := &Migration{
 		OrderingNumber: number,
+		Name:           name,
 	}
 	numberStr := fmt.Sprintf("%d", number)
 	yearStr := numberStr[0:4]
