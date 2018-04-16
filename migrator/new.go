@@ -40,13 +40,13 @@ func (m *MigrationFile) FileName() string {
 	return m.Name + ".go"
 }
 
-func newMigrationFile(name string) *MigrationFile {
+func newMigrationFile(name string, path string) *MigrationFile {
 	name = strings.Replace(name, " ", "_", 100)
 	m := &MigrationFile{
 		Timestamp: time.Now(),
 	}
 	secondsInDay := m.Timestamp.Unix() % 86400
-	m.Name = fmt.Sprintf("%d_%02d_%02d_%05d_%s", m.Timestamp.Year(), m.Timestamp.Month(), m.Timestamp.Day(), secondsInDay, name)
+	m.Name = fmt.Sprintf("%d_%02d_%02d_%05d_%s", m.Timestamp.Year(), m.Timestamp.Month(), m.Timestamp.Day(), secondsInDay, path)
 	m.FuncName = fmt.Sprintf("Migration%d%02d%02d%05d%s", m.Timestamp.Year(), m.Timestamp.Month(), m.Timestamp.Day(), secondsInDay, camelCase(name))
 	m.OrderingNumber, _ = strconv.ParseInt(fmt.Sprintf("%d%02d%02d%05d", m.Timestamp.Year(), m.Timestamp.Month(), m.Timestamp.Day(), secondsInDay), 10, 64)
 	return m
@@ -55,8 +55,11 @@ func newMigrationFile(name string) *MigrationFile {
 func NewMigrationFile(options *NewOptions) {
 	config = LoadConfig()
 
-	m := newMigrationFile(*options.Name)
+	m := newMigrationFile(*options.Name, *options.Name)
 	renderTemplate("new_migration.tmpl", m)
+
+	testFile := newMigrationFile(*options.Name, *options.Name+"_test")
+	renderTemplate("new_migration_test.tmpl", testFile)
 
 	updateMainMigrationFile(m)
 
